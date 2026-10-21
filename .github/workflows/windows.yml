@@ -19,7 +19,9 @@ jobs:
       - name: Check bridge C# syntax against the test API fixture
         shell: pwsh
         run: |
-          & "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /target:library "/out:$env:RUNNER_TEMP\BridgeSyntaxCheck.dll" /reference:System.Drawing.dll /reference:System.Windows.Forms.dll /reference:System.Xml.dll /reference:System.Core.dll test/VegasApiStub.cs vegas/BCC-Export-Effects.cs 2>&1 | Tee-Object -Variable compilerOutput
+          $fixture = Join-Path $env:GITHUB_WORKSPACE 'test\VegasApiStub.cs'
+          $bridge = Join-Path $env:GITHUB_WORKSPACE 'vegas\BCC-Export-Effects.cs'
+          & "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /target:library "/out:$env:RUNNER_TEMP\BridgeSyntaxCheck.dll" /reference:System.Drawing.dll /reference:System.Windows.Forms.dll /reference:System.Xml.dll /reference:System.Core.dll $fixture $bridge 2>&1 | Tee-Object -Variable compilerOutput
           $compilerExit = $LASTEXITCODE
           if ($compilerExit -ne 0) {
             foreach ($line in $compilerOutput) { Write-Host "::error::$line" }
