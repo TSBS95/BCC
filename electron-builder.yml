@@ -1,0 +1,21 @@
+appId: com.bccfxmanager.desktop
+productName: BCC FX Manager
+directories:
+  output: dist/installer
+files:
+  - src/**/*
+  - vegas/**/*
+  - package.json
+  - README.md
+  - assets/**/*
+win:
+  target: nsis
+  icon: assets/icon.ico
+  signExecutable: false
+  artifactName: BCC-FX-Manager-Setup.exe
+nsis:
+  oneClick: true
+  perMachine: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: BCC FX Manager

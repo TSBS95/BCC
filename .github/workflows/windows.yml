@@ -1,0 +1,42 @@
+name: Build Windows download
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Check bridge C# syntax against the test API fixture
+        shell: pwsh
+        run: |
+          & "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /target:library "/out:$env:RUNNER_TEMP\BridgeSyntaxCheck.dll" /reference:System.Drawing.dll /reference:System.Windows.Forms.dll /reference:System.Xml.dll /reference:System.Core.dll test/VegasApiStub.cs vegas/BCC-Export-Effects.cs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - run: npm run build:win
+      - name: Launch the packaged Windows app and verify its real renderer and IPC
+        run: node scripts/smoke-packaged.js "dist/BCC FX Manager-win32-x64/BCC FX Manager.exe"
+      - run: npm run build:installer
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BCC-FX-Manager-Windows-x64
+          path: |
+            dist/BCC-FX-Manager-Windows-x64.zip
+            dist/installer/BCC-FX-Manager-Setup.exe
+          if-no-files-found: error
+      - name: Publish the Windows preview downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $tag = "preview-0.2.0-${{ github.run_number }}"
+          gh release create $tag dist/BCC-FX-Manager-Windows-x64.zip dist/installer/BCC-FX-Manager-Setup.exe --target "${{ github.sha }}" --title "BCC FX Manager 0.2.0 preview" --notes-file RELEASE_NOTES.md --prerelease
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

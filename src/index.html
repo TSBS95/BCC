@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>BCC FX Manager</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<aside class="sidebar">
+ <div class="brand"><span class="brand-mark">B+</span><div>BCC FX Manager<small>FOR VEGAS PRO 23</small></div></div>
+ <nav aria-label="Main navigation"><button class="nav active" id="nav-search"><span>⌕</span> Search</button><button class="nav" id="nav-suggest"><span>✧</span> FX Suggest</button></nav>
+ <div class="nav-label folders-heading">YOUR FOLDERS <button id="add-folder" aria-label="Create folder">+</button></div>
+ <div id="folder-list"></div>
+ <button class="nav" id="nav-favorites"><span>☆</span> Favorites <small id="favorite-count">0</small></button>
+ <button class="nav settings-nav" id="settings-button"><span>⋯</span> Backup & help</button>
+ <div class="sidebar-bottom"><span class="connection-dot"></span><div id="connection">Not connected<small>Connect VEGAS to get started</small></div><button id="connect-small" title="Connect VEGAS">→</button></div>
+</aside>
+<main>
+ <header><div class="breadcrumb">BCC FX MANAGER <span>/</span> <b id="breadcrumb">Search</b></div><button class="button secondary" id="connect">Connect VEGAS</button></header>
+ <section id="search-page">
+  <div class="page-heading"><div><h1 id="library-title">Find your effects.</h1><p id="library-description">BCC+, BCC, Sapphire, and your other VEGAS effects. All in one place.</p></div><div class="total"><b id="total-count">0</b><span>effects</span></div></div>
+  <div class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="Search for an effect…" aria-label="Search effects"><kbd>Ctrl K</kbd></div>
+  <div class="filter-row"><div class="chips" id="families"></div><button class="text-button" id="import">Import effect list</button></div>
+  <div class="results-heading"><span id="result-count">YOUR EFFECTS</span><div><button class="text-button hidden" id="rename-folder">Rename folder</button><span id="catalogue-label">VEGAS EFFECTS</span></div></div>
+  <div class="notice hidden" id="demo-notice">Demo mode. These examples are not your installed effects. <button id="exit-demo">Exit demo</button></div>
+  <div id="effects" class="effect-grid"></div>
+  <div id="empty-library" class="empty-state"><div class="empty-art">+</div><h2>Bring in your effects.</h2><p>Connect to VEGAS to search and organize your installed plugins.</p><div class="empty-actions"><button class="button primary" id="connect-empty">Connect VEGAS</button><button class="button secondary" id="try-demo">Explore a demo</button></div><small>Your existing Boris FX plugins and licenses are required.</small></div>
+  <div id="no-results" class="empty-state hidden"><h2>No effects here yet.</h2><p>Try a different search, or add effects to this folder using Manage.</p></div>
+ </section>
+ <section id="suggest-page" class="hidden">
+  <div class="page-heading"><div><h1>Describe your scene.</h1><p>Get effect ideas and starting settings for the look you want.</p></div></div>
+  <div class="suggest-input"><label for="scene">WHAT’S IN THE SCENE? WHAT LOOK DO YOU WANT?</label><textarea id="scene" maxlength="2000" placeholder="For example: a fast car scene at night, neon lights on the road, with cuts on the music beat…"></textarea><div><span>Works offline with your effect list</span><button class="button primary" id="generate">Suggest effects</button></div></div>
+  <div class="examples"><span>TRY</span><button data-scene="A dreamy wedding portrait with warm sunset backlight and a subtle natural look">Warm wedding</button><button data-scene="A fast action sports edit with strong impacts on the music beat">Action edit</button><button data-scene="A retro film memory with subtle vintage texture">Vintage memory</button></div>
+  <p class="suggest-disclaimer">Suggestions use your description, not footage analysis. Open an idea and choose Read settings from VEGAS for numeric starting values, where the plugin exposes suitable controls. Adjust them to suit your shot.</p>
+  <div id="suggest-results" class="suggest-grid"></div><div id="suggest-empty" class="suggest-placeholder"><span>✧</span><h2>Your ideas will appear here.</h2><p>Tell us about the lighting, movement, mood, or style.</p></div>
+ </section>
+ <footer><span>WINDOWS 11 · VEGAS PRO 23</span><span>Independent tool. Plugins are not included.</span></footer>
+</main>
+<dialog id="connect-dialog"><div class="dialog-header"><div><div class="eyebrow">ONE-TIME SCRIPT SETUP</div><h2>Connect to VEGAS.</h2></div><button class="close-dialog" aria-label="Close">×</button></div>
+ <ol class="steps"><li><b>Save the connection script</b><span>Click Save script below. Keep the file somewhere easy to find.</span></li><li><b>Run it in VEGAS Pro 23</b><span>Go to Tools → Scripting → Run Script and select BCC-FX-Manager.cs.</span></li><li><b>Keep the BCC FX Manager panel open</b><span>Your installed effects and folders appear in the panel. Return here to search, organize, and apply effects.</span></li></ol>
+ <div class="notice">Run the script again after restarting VEGAS. Folders appear inside our dockable VEGAS panel; the built-in Video FX browser stays separate. First-use compatibility still needs testing on VEGAS Pro 23.</div>
+ <details><summary>Manual import if needed</summary><p>Import Documents\BCC FX Manager\installed-effects.xml if the automatic effect list is unavailable. Direct apply requires the live panel connection.</p></details>
+ <div class="dialog-actions"><button class="button secondary" id="import-dialog">Import effect list</button><button class="button primary" id="save-bridge">Save script</button></div>
+</dialog>
+<dialog id="folder-dialog"><div class="dialog-header"><h2 id="folder-dialog-title">Create a folder</h2><button class="close-dialog" aria-label="Close">×</button></div><form id="folder-form"><label for="folder-name">Folder name</label><input id="folder-name" maxlength="60" placeholder="e.g. Night edits" required><div class="dialog-actions"><button class="button primary" type="submit">Save folder</button></div></form></dialog>
+<dialog id="delete-dialog"><div class="dialog-header"><h2>Delete this folder?</h2><button class="close-dialog" aria-label="Close">×</button></div><p id="delete-description"></p><div class="dialog-actions"><button class="button secondary close-dialog">Cancel</button><button class="button primary" id="confirm-delete">Delete folder</button></div></dialog>
+<dialog id="settings-dialog"><div class="dialog-header"><h2>Backup & help</h2><button class="close-dialog" aria-label="Close">×</button></div><p>Back up your folders and favorites before moving PCs. Restoring a backup replaces your current folders and favorites, but never changes installed plugins.</p><div class="dialog-actions"><button class="button secondary" id="backup-library">Save backup</button><button class="button secondary" id="restore-library">Choose backup to restore</button></div><hr><h3>Using the VEGAS panel</h3><p>Select video events on the timeline before applying an effect. The app adds a new effect instance to every selected video event. Use VEGAS Undo to remove the operation. Your folders are mirrored into the BCC FX Manager panel while it is open.</p><h3>About suggestions</h3><p>The local suggestion database matches scene descriptions to installed effect names. Numeric ideas use controls and ranges read from your actual plugin; they are editable starting points, not tested presets. Unsupported controls remain available in VEGAS.</p></dialog>
+<dialog id="effect-dialog"><div class="dialog-header"><div><div class="eyebrow" id="detail-family"></div><h2 id="detail-name"></h2></div><button class="close-dialog" aria-label="Close">×</button></div>
+ <label for="folder-select">ADD TO FOLDER</label><div class="folder-picker"><select id="folder-select"></select><button class="button secondary" id="add-to-folder">Add</button></div>
+ <button class="text-button hidden" id="remove-from-folder">Remove from this folder</button>
+ <hr><div class="settings-heading"><div><h3>Starting settings</h3><p>Read your plugin’s numeric controls, then select values to apply.</p></div><button class="button secondary" id="read-controls">Read settings from VEGAS</button></div>
+ <div id="controls-status" class="suggest-disclaimer">Without selected settings, the default effect will be applied.</div><div id="parameter-controls"></div>
+ <p class="suggest-disclaimer">Select your video events in VEGAS first. Applying adds a new effect to each selected video event. Use VEGAS Undo to remove it.</p>
+ <div class="dialog-actions"><button class="button secondary" id="save-apply">Save fallback script</button><button class="button primary" id="apply-direct">Apply in VEGAS</button></div>
+</dialog>
+<div id="toast" role="status" class="hidden"></div>
+<script src="core.js"></script><script src="renderer.js"></script>
+</body></html>

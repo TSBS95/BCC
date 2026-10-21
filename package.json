@@ -1,0 +1,23 @@
+{
+  "name": "bcc-fx-manager",
+  "version": "0.2.0",
+  "private": true,
+  "description": "An independent effect library and scene suggestion companion for VEGAS Pro",
+  "main": "src/main.js",
+  "author": "BCC FX Manager contributors",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.js",
+    "build:win": "node scripts/package.js",
+    "build:installer": "electron-builder --win nsis --x64 --publish never"
+  },
+  "devDependencies": {
+    "@electron/packager": "20.3.0",
+    "electron": "45.0.0",
+    "electron-builder": "26.15.3"
+  },
+  "dependencies": {
+    "fast-xml-parser": "5.11.2"
+  }
+}
