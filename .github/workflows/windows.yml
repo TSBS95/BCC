@@ -9,8 +9,8 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
@@ -19,8 +19,12 @@ jobs:
       - name: Check bridge C# syntax against the test API fixture
         shell: pwsh
         run: |
-          & "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /target:library "/out:$env:RUNNER_TEMP\BridgeSyntaxCheck.dll" /reference:System.Drawing.dll /reference:System.Windows.Forms.dll /reference:System.Xml.dll /reference:System.Core.dll test/VegasApiStub.cs vegas/BCC-Export-Effects.cs
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /target:library "/out:$env:RUNNER_TEMP\BridgeSyntaxCheck.dll" /reference:System.Drawing.dll /reference:System.Windows.Forms.dll /reference:System.Xml.dll /reference:System.Core.dll test/VegasApiStub.cs vegas/BCC-Export-Effects.cs 2>&1 | Tee-Object -Variable compilerOutput
+          $compilerExit = $LASTEXITCODE
+          if ($compilerExit -ne 0) {
+            foreach ($line in $compilerOutput) { Write-Host "::error::$line" }
+            exit $compilerExit
+          }
       - run: npm run build:win
       - name: Launch the packaged Windows app and verify its real renderer and IPC
         run: node scripts/smoke-packaged.js "dist/BCC FX Manager-win32-x64/BCC FX Manager.exe"
